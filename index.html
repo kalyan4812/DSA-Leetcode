@@ -477,6 +477,42 @@ body {
   margin-right: 4px;
 }
 
+.problem-followup {
+  font-size: 13px;
+  color: var(--ink-dim);
+  line-height: 1.6;
+  margin-top: 6px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(233, 184, 114, 0.35);
+}
+
+.problem-followup b {
+  color: var(--accent-2);
+  font-weight: 500;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+
+.problem-companies {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.company-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(217, 119, 87, 0.08);
+  color: var(--accent);
+  border: 1px solid rgba(217, 119, 87, 0.2);
+}
+
 .problem-meta {
   display: flex;
   gap: 10px;
@@ -615,7 +651,7 @@ footer a:hover { text-decoration: underline; }
 
 <script>
 // Auto-generated combined data for LeetCode Pattern Atlas v2
-// Combines 4 base parts with supplement additions.
+// Built from parts 1-4 + supplement + gaps. Cross-ref stubs are skipped.
 
 const DATA_PARTS = [
   [
@@ -2503,36 +2539,897 @@ const DATA_SUPPLEMENT = {
      url:"https://leetcode.com/problems/remove-duplicate-letters/"},
   ],
 };
+const DATA_GAPS = {
+  "Arrays & Hashing": [
+    {num:1365, name:"How Many Numbers Are Smaller Than the Current Number", diff:"Easy", pattern:"Counting Sort (Bounded Range)",
+     why:"Demonstrates counting sort — O(n) sort when values are bounded. A distinct technique from comparison sort.",
+     approach:"Count[v] = frequency; prefix-sum it; answer[i] = prefix[nums[i]−1].",
+     time:"O(n + V)", space:"O(V)",
+     url:"https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/"},
+    {num:1010, name:"Pairs of Songs With Total Durations Divisible by 60", diff:"Medium", pattern:"Complement Hashing on Modulus",
+     why:"Modulus version of two-sum — the complement is (60 − t%60) % 60. Slightly different logic worth seeing.",
+     approach:"Count remainders; for each t, add count[(60 − t%60) % 60] to answer before incrementing its own bucket.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/"},
+    {num:554, name:"Brick Wall", diff:"Medium", pattern:"Hash Map of Gap Counts",
+     why:"Reframe 'min bricks cut' as 'max gaps aligned' — a pivot-the-problem trick.",
+     approach:"For each row, accumulate prefix (excluding last brick) into map; answer = totalRows − max(map).",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/brick-wall/"},
+    {num:1657, name:"Determine if Two Strings Are Close", diff:"Medium", pattern:"Sorted Frequency Multiset Compare",
+     why:"Subtle reinforcement of frequency invariants under allowed ops — teaches what 'set of frequencies' means as an invariant.",
+     approach:"Both must have same char set; sorted frequency arrays must match.",
+     time:"O(n + k log k)", space:"O(k)",
+     url:"https://leetcode.com/problems/determine-if-two-strings-are-close/"},
+    {num:2215, name:"Find the Difference of Two Arrays", diff:"Easy", pattern:"Set Symmetric Difference",
+     why:"Explicit set-theory operation — pattern reused in many problems but rarely named.",
+     approach:"s1−s2 and s2−s1 as set difference.",
+     time:"O(n+m)", space:"O(n+m)",
+     url:"https://leetcode.com/problems/find-the-difference-of-two-arrays/"},
+  ],
 
-// Flatten all parts into a single list of topics, then merge supplement entries
-const _byTopic = new Map();
-const _order = [];
-DATA_PARTS.forEach(part => {
-  part.forEach(topic => {
-    if (!_byTopic.has(topic.topic)) {
-      _byTopic.set(topic.topic, {topic: topic.topic, blurb: topic.blurb, problems: []});
-      _order.push(topic.topic);
-    }
-    const t = _byTopic.get(topic.topic);
-    t.problems.push(...topic.problems);
+  "Prefix Sum & Difference Arrays": [
+    {num:2256, name:"Minimum Average Difference", diff:"Medium", pattern:"Prefix Sum — Split Scan",
+     why:"Two-sided scan using total − prefix — reinforces 'suffix from prefix' thinking.",
+     approach:"Total sum = S; for each i: leftAvg = prefix/(i+1), rightAvg = (S−prefix)/(n−i−1); track min diff.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/minimum-average-difference/"},
+    {num:1423, name:"Maximum Points You Can Obtain from Cards", diff:"Medium", pattern:"Prefix + Suffix Sum",
+     why:"Window-of-n−k complement — clean exercise in inverting the problem.",
+     approach:"Pick k from ends ⇒ leave n−k contiguous in middle; use sliding window to minimize the middle sum.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/"},
+    {num:2017, name:"Grid Game", diff:"Medium", pattern:"Prefix/Suffix Split (Adversarial)",
+     why:"Minimax over split point — robot 1 picks split, robot 2 takes max remainder.",
+     approach:"Running top-sum suffix + bottom-sum prefix; at each split point the second robot gets max(top_right, bottom_left); minimize over splits.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/grid-game/"},
+  ],
+
+  "Two Pointers": [
+    {num:189, name:"Rotate Array", diff:"Medium", pattern:"Three-Reverse Rotation",
+     why:"Unique in-place O(1)-space trick: reverse all, reverse first k, reverse rest. Used in many string problems too.",
+     approach:"k %= n; reverse nums[0..n−1]; reverse nums[0..k−1]; reverse nums[k..n−1].",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/rotate-array/"},
+    {num:27, name:"Remove Element", diff:"Easy", pattern:"Two-Pointer — Write Index",
+     why:"Purest 'write head' template — slight variant of #26 but drills the core pattern.",
+     approach:"w=0; for each r, if nums[r]!=val, nums[w++]=nums[r].",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/remove-element/"},
+    {num:905, name:"Sort Array By Parity", diff:"Easy", pattern:"Two-Pointer Partition",
+     why:"Lomuto-style partition — the seed of quickselect and Dutch flag variants.",
+     approach:"l, r from ends; if nums[l] even advance, else swap with nums[r] and r−−.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/sort-array-by-parity/"},
+  ],
+
+  "Sliding Window": [
+    {num:930, name:"Binary Subarrays With Sum", diff:"Medium", pattern:"Exactly-K via atMost (binary)",
+     why:"Clean reinforcement of atMost(K)−atMost(K−1); binary-array flavor is common in interviews.",
+     approach:"atMost(goal) = sliding window counting subarrays with sum ≤ goal; subtract.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/binary-subarrays-with-sum/"},
+    {num:1456, name:"Maximum Number of Vowels in a Substring of Given Length", diff:"Medium", pattern:"Fixed Window — Count Target Chars",
+     why:"Simplest fixed-window counting — good checkpoint problem.",
+     approach:"Count vowels in first k; slide by +new −leaving; track max.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/"},
+    {num:1493, name:"Longest Subarray of 1's After Deleting One Element", diff:"Medium", pattern:"Window with At-Most-1 Zero",
+     why:"Specific variant of the 'at most k zeros' template with a subtle −1 at the end.",
+     approach:"Window allowing ≤1 zero; answer = window_len − 1 (we must delete exactly one).",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/longest-subarray-of-1s-after-deleting-one-element/"},
+  ],
+
+  "Strings — Pattern Matching": [
+    {num:1392, name:"Longest Happy Prefix", diff:"Hard", pattern:"KMP — LPS Output",
+     why:"Cleanest way to see that the KMP failure function IS the longest proper prefix that's also a suffix.",
+     approach:"Build LPS array; answer = s[0..lps[n−1]−1].",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/longest-happy-prefix/"},
+    {num:1408, name:"String Matching in an Array", diff:"Easy", pattern:"Substring Containment (introduction)",
+     why:"Warm-up for thinking about substring relations across multiple strings.",
+     approach:"For each word, check if it appears in any other word (filter self).",
+     time:"O(n²·L)", space:"O(1)",
+     url:"https://leetcode.com/problems/string-matching-in-an-array/"},
+    {num:1062, name:"Longest Repeating Substring", diff:"Medium", pattern:"DP or Binary Search + Rolling Hash",
+     why:"Smaller sibling of #1044 — a gentler entry to the BS-on-length + hash technique.",
+     approach:"dp[i][j] = dp[i−1][j−1]+1 if s[i]==s[j] (i≠j); track max.",
+     time:"O(n²)", space:"O(n²)",
+     alt:"BS length L + rolling-hash feasibility.",
+     url:"https://leetcode.com/problems/longest-repeating-substring/"},
+  ],
+
+  "Stack": [
+    {num:946, name:"Validate Stack Sequences", diff:"Medium", pattern:"Simulate with Stack",
+     why:"Direct simulation — essential 'when to push vs pop' reflex.",
+     approach:"Push pushed[i]; after each push, while stack top == popped[j], pop and j++; stack empty at end ⇒ valid.",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/validate-stack-sequences/"},
+    {num:1249, name:"Minimum Remove to Make Valid Parentheses", diff:"Medium", pattern:"Stack of Unmatched Indices",
+     why:"Records positions of extras — technique reused in many editor-like problems.",
+     approach:"Stack pushes '(' indices; ')' pops if possible else marks index to remove; at end all remaining '(' indices are removed.",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/"},
+  ],
+
+  "Monotonic Stack / Queue": [
+    {num:456, name:"132 Pattern", diff:"Medium", pattern:"Monotonic Stack Right-to-Left (second-max)",
+     why:"Non-trivial use: scan right→left maintaining second-max candidate via stack — a surprising template.",
+     approach:"Scan right→left; maintain max candidate k (the '2'); stack of values; if cur < k, found 132; pop stack values < cur, updating k = max popped.",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/132-pattern/"},
+    {num:1944, name:"Number of Visible People in a Queue", diff:"Hard", pattern:"Monotonic Decreasing Stack — Count Pops",
+     why:"Count-while-popping variant — each taller person 'sees' all shorter people popped plus one next-taller.",
+     approach:"Scan right→left; while stack top < cur, pop and count; if stack non-empty add 1 (cur sees the next-taller).",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/number-of-visible-people-in-a-queue/"},
+    {num:1019, name:"Next Greater Node In Linked List", diff:"Medium", pattern:"Monotonic Stack on Linked List",
+     why:"Same idea transferred to a different structure — forces generalizing the template.",
+     approach:"Convert to array (or traverse and index); standard next-greater with stack of indices.",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/next-greater-node-in-linked-list/"},
+  ],
+
+  "Binary Search": [
+    {num:378, name:"Kth Smallest Element in a Sorted Matrix", diff:"Medium", pattern:"BS on Value Range + Count",
+     why:"Essential technique: binary-search the answer value, count elements ≤ mid in O(m+n) via staircase.",
+     approach:"BS lo=matrix[0][0], hi=matrix[n−1][n−1]; count(≤mid) via staircase walk; shrink range.",
+     time:"O(n log(max−min))", space:"O(1)",
+     alt:"Min-heap of k smallest — O(k log k).",
+     url:"https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/"},
+    {num:719, name:"Find K-th Smallest Pair Distance", diff:"Hard", pattern:"BS on Answer + Two-Pointer Count",
+     why:"Combines BS on value with a two-pointer feasibility count — unique and powerful fusion.",
+     approach:"Sort; BS distance d; count pairs with diff ≤ d via two-pointer; find smallest d with count ≥ k.",
+     time:"O(n log n + n log(max))", space:"O(1)",
+     url:"https://leetcode.com/problems/find-k-th-smallest-pair-distance/"},
+    {num:1539, name:"Kth Missing Positive Number", diff:"Easy", pattern:"BS on Missing-Count Invariant",
+     why:"Non-obvious BS: the 'number of missing values before index i' is a monotone function — BS on it.",
+     approach:"missing(i) = arr[i] − (i+1); BS smallest i with missing(i) ≥ k; answer = k + i.",
+     time:"O(log n)", space:"O(1)",
+     url:"https://leetcode.com/problems/kth-missing-positive-number/"},
+    {num:81, name:"Search in Rotated Sorted Array II", diff:"Medium", pattern:"BS with Duplicate Shrink",
+     why:"Duplicates break the 'which half is sorted' check — teaches the l++, r-- shrink fallback.",
+     approach:"When nums[l]==nums[mid]==nums[r], l++ and r−−; otherwise classic rotated-BS logic.",
+     time:"O(log n) avg, O(n) worst", space:"O(1)",
+     url:"https://leetcode.com/problems/search-in-rotated-sorted-array-ii/"},
+  ],
+
+  "Linked List": [
+    {num:86, name:"Partition List", diff:"Medium", pattern:"Two-List Partition",
+     why:"Build two separate lists and stitch — reusable whenever you need a stable partition.",
+     approach:"Two dummy heads (less, greater); append each node to appropriate tail; link less_tail→greater_head.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/partition-list/"},
+    {num:61, name:"Rotate List", diff:"Medium", pattern:"Length + Re-anchor",
+     why:"Teaches the 'close the cycle, walk, break' trick — clever and reusable.",
+     approach:"Measure length n; k %= n; close into cycle; walk n−k−1 steps; break.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/rotate-list/"},
+    {num:160, name:"Intersection of Two Linked Lists", diff:"Easy", pattern:"Pointer Length Equalization",
+     why:"Beautiful trick: swap heads on null — both pointers traverse m+n, meeting at intersection.",
+     approach:"Two pointers; when one hits null, redirect to the OTHER head; they collide at intersection or null.",
+     time:"O(n+m)", space:"O(1)",
+     url:"https://leetcode.com/problems/intersection-of-two-linked-lists/"},
+  ],
+
+  "Trees": [
+    {num:987, name:"Vertical Order Traversal of a Binary Tree", diff:"Hard", pattern:"DFS/BFS with (col, row, val) Sort",
+     why:"Introduces coordinate-based tree processing — col-keyed map plus tiebreak sort.",
+     approach:"DFS recording (col, row, val); group by col; sort each group by (row, val); emit left-to-right.",
+     time:"O(n log n)", space:"O(n)",
+     url:"https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/"},
+    {num:108, name:"Convert Sorted Array to Binary Search Tree", diff:"Easy", pattern:"Balanced BST Construction",
+     why:"Divide-and-conquer to build balanced BST — classic recursive construction.",
+     approach:"Middle becomes root; recurse on left half and right half.",
+     time:"O(n)", space:"O(log n)",
+     url:"https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/"},
+    {num:222, name:"Count Complete Tree Nodes", diff:"Easy", pattern:"Complete-Tree Log² Count",
+     why:"Unique O(log² n) algorithm exploiting completeness — elegant divide and conquer.",
+     approach:"Measure left and right spine depths; if equal, full subtree of size 2^d−1; else recurse on both sides.",
+     time:"O(log² n)", space:"O(log n)",
+     url:"https://leetcode.com/problems/count-complete-tree-nodes/"},
+    {num:173, name:"Binary Search Tree Iterator", diff:"Medium", pattern:"Controlled In-Order (Stack)",
+     why:"Teaches how to 'pause and resume' an in-order traversal using an explicit stack.",
+     approach:"Stack holds left-spine from root; next() pops, pushes right child's left-spine; hasNext() = stack non-empty.",
+     time:"amortized O(1) next", space:"O(h)",
+     url:"https://leetcode.com/problems/binary-search-tree-iterator/"},
+    {num:1372, name:"Longest ZigZag Path in a Binary Tree", diff:"Medium", pattern:"Tree DP — Direction State",
+     why:"Tree DP where state includes direction — a useful generalization.",
+     approach:"DFS returning (left_going_len, right_going_len); left = 1 + right_going from left child; vice versa.",
+     time:"O(n)", space:"O(h)",
+     url:"https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/"},
+    {num:662, name:"Maximum Width of Binary Tree", diff:"Medium", pattern:"BFS with Index Encoding",
+     why:"Heap-indexing trick — encode positions as 2i and 2i+1 to measure width.",
+     approach:"BFS storing (node, idx); per level, width = last_idx − first_idx + 1; renormalize idx to avoid overflow.",
+     time:"O(n)", space:"O(w)",
+     url:"https://leetcode.com/problems/maximum-width-of-binary-tree/"},
+  ],
+
+  "Tries": [
+    {num:1268, name:"Search Suggestions System", diff:"Medium", pattern:"Trie + Lexicographic Top-3",
+     why:"Practical trie app — autocomplete. Teaches pairing trie nodes with sorted lists.",
+     approach:"Insert sorted products into trie; each node keeps smallest 3 strings; walk prefix and return each step's list.",
+     time:"O(L·3)", space:"O(total chars)",
+     alt:"Sort + binary search on the product list.",
+     url:"https://leetcode.com/problems/search-suggestions-system/"},
+    {num:1707, name:"Maximum XOR With an Element From Array", diff:"Hard", pattern:"Binary Trie + Offline Queries",
+     why:"Combines binary trie with sorting queries by the m-bound — an advanced pattern.",
+     approach:"Sort nums and queries by the cap m; insert nums into binary trie as cap allows; per query greedy-XOR walk.",
+     time:"O((n+q) log V)", space:"O(n log V)",
+     url:"https://leetcode.com/problems/maximum-xor-with-an-element-from-array/"},
+  ],
+
+  "Heap / Priority Queue": [
+    {num:1405, name:"Longest Happy String", diff:"Medium", pattern:"Greedy Heap with Block Constraint",
+     why:"Unique constraint: can't have 3 in a row — teaches 'use next-best when top is blocked'.",
+     approach:"Max-heap of (count, char); pop top; if last two chars = this char, use runner-up instead; push back decremented.",
+     time:"O(n log 3)", space:"O(1)",
+     url:"https://leetcode.com/problems/longest-happy-string/"},
+    {num:632, name:"Smallest Range Covering Elements from K Lists", diff:"Hard", pattern:"K-way Merge + Range Track",
+     why:"Sliding a range across k sorted streams via heap — new twist on k-way merge.",
+     approach:"Heap of (val, list_idx, pos); track currentMax; pop min, advance that list, update range if (currentMax − min) smaller.",
+     time:"O(N log k)", space:"O(k)",
+     url:"https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/"},
+    {num:218, name:"Skyline (already listed)", diff:"Hard", pattern:"cross-ref",
+     why:"cross-ref",
+     approach:"cross-ref",
+     time:"-", space:"-",
+     url:"-"},
+  ],
+
+  "Backtracking": [
+    {num:216, name:"Combination Sum III", diff:"Medium", pattern:"BT with Fixed k and No-Reuse",
+     why:"Extra constraint (exactly k numbers, all 1-9) — reinforces pruning in BT.",
+     approach:"Pick from start..9, decrement target and k; prune when remaining impossible.",
+     time:"O(C(9,k))", space:"O(k)",
+     url:"https://leetcode.com/problems/combination-sum-iii/"},
+    {num:473, name:"Matchsticks to Square", diff:"Medium", pattern:"BT with Bucket Assignment",
+     why:"Assign-to-buckets BT template — foundation for partition problems beyond knapsack.",
+     approach:"Sort desc; try placing each stick into one of 4 buckets; prune when exceeding side or skipping identical choices.",
+     time:"O(4ⁿ)", space:"O(n)",
+     url:"https://leetcode.com/problems/matchsticks-to-square/"},
+    {num:282, name:"Expression Add Operators", diff:"Hard", pattern:"BT with Last-Multiplication State",
+     why:"Extra state (last operand) to handle operator precedence in expression-building — a unique challenge.",
+     approach:"Recurse with (pos, total, last_mult); at each split try +n, −n, or *n (total − last + last·n).",
+     time:"O(4ⁿ)", space:"O(n)",
+     url:"https://leetcode.com/problems/expression-add-operators/"},
+  ],
+
+  "Graphs — Core": [
+    {num:1319, name:"Number of Operations to Make Network Connected", diff:"Medium", pattern:"UF — Count Redundant Edges",
+     why:"Reuse-an-edge insight: components−1 cables needed, redundant edges available to reuse.",
+     approach:"UF all edges; count components c; count redundant (already-unioned) edges r; answer = c−1 if r ≥ c−1 else −1.",
+     time:"O(E·α)", space:"O(V)",
+     url:"https://leetcode.com/problems/number-of-operations-to-make-network-connected/"},
+    {num:399, name:"Evaluate Division", diff:"Medium", pattern:"Graph as Equations (DFS/UF with Weights)",
+     why:"Uncommon pattern — variables as nodes, equations as weighted edges; DFS accumulates products.",
+     approach:"Build weighted graph a→b with weight a/b; DFS from query src multiplying weights until dst.",
+     time:"O(Q·(V+E))", space:"O(V+E)",
+     alt:"Weighted union-find: parent + ratio to parent.",
+     url:"https://leetcode.com/problems/evaluate-division/"},
+    {num:2092, name:"Find All People With Secret", diff:"Hard", pattern:"Time-Ordered Union-Find",
+     why:"UF where groups must be rolled back if no secret reaches them — teaches reversible UF.",
+     approach:"Sort meetings by time; within same time, union all participants; if any knows, all know; else roll back unions.",
+     time:"O(M α)", space:"O(N+M)",
+     url:"https://leetcode.com/problems/find-all-people-with-secret/"},
+    {num:886, name:"Possible Bipartition", diff:"Medium", pattern:"2-Coloring (Multiple Components)",
+     why:"Applies bipartite check to a social-conflict setup — useful reframing practice.",
+     approach:"BFS/DFS each component alternating colors; conflict ⇒ impossible.",
+     time:"O(V+E)", space:"O(V+E)",
+     url:"https://leetcode.com/problems/possible-bipartition/"},
+  ],
+
+  "Graphs — Advanced": [
+    {num:1976, name:"Number of Ways to Arrive at Destination", diff:"Medium", pattern:"Dijkstra + Count of Shortest Paths",
+     why:"Augments Dijkstra with a second array — ways[v] counts shortest-path reconstructions.",
+     approach:"Standard Dijkstra; when relaxing, if tie update ways[v] += ways[u]; if strict improvement ways[v] = ways[u].",
+     time:"O((V+E) log V)", space:"O(V)",
+     url:"https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/"},
+    {num:1719, name:"Number Of Ways to Reconstruct A Tree", diff:"Hard", pattern:"Tree Reconstruction from Ancestor Pairs",
+     why:"Unique problem but teaches a general skill: verifying structure from pairwise constraints.",
+     approach:"Count pairs per node as ancestry degree; sort by degree desc; verify each node's neighbors form a chain containing all higher-degree nodes.",
+     time:"O(N + P log P)", space:"O(N+P)",
+     url:"https://leetcode.com/problems/number-of-ways-to-reconstruct-a-tree/"},
+    {num:765, name:"Couples Holding Hands", diff:"Hard", pattern:"UF / Greedy Swaps",
+     why:"Graph of 'couples needing to be together' — cycles determine swap count.",
+     approach:"UF: union couple-IDs of each adjacent pair; answer = n_pairs − n_components.",
+     time:"O(N α)", space:"O(N)",
+     url:"https://leetcode.com/problems/couples-holding-hands/"},
+    {num:1489, name:"Find Critical and Pseudo-Critical Edges in MST", diff:"Hard", pattern:"MST + Edge Necessity (rerun Kruskal's)",
+     why:"Advanced MST twist: classify each edge by re-running MST with it forced in/out.",
+     approach:"Compute base MST weight. For each edge: (a) exclude and check if MST weight grows ⇒ critical; (b) force-include and check if MST possible at base weight ⇒ pseudo-critical.",
+     time:"O(E²·α)", space:"O(V+E)",
+     url:"https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/"},
+    {num:1135, name:"Connecting Cities With Minimum Cost", diff:"Medium", pattern:"MST — Kruskal's",
+     why:"Purest Kruskal's setup — a natural place to practice DSU + sorted edges.",
+     approach:"Sort edges by cost; union endpoints if disconnected, add cost; verify all nodes unified.",
+     time:"O(E log E)", space:"O(V)",
+     url:"https://leetcode.com/problems/connecting-cities-with-minimum-cost/"},
+  ],
+
+  "1-D Dynamic Programming": [
+    {num:740, name:"Delete and Earn", diff:"Medium", pattern:"House-Robber Reduction",
+     why:"Maps directly onto House Robber by bucketing by value — a clean reduction.",
+     approach:"points[v] = v·count[v]; run House Robber on points[1..max].",
+     time:"O(n + V)", space:"O(V)",
+     url:"https://leetcode.com/problems/delete-and-earn/"},
+    {num:368, name:"Largest Divisible Subset", diff:"Medium", pattern:"LIS Variant + Predecessor Reconstruction",
+     why:"LIS-style DP with chain reconstruction — teaches how to trace back a DP solution.",
+     approach:"Sort; dp[i] = longest chain ending at i; prev[i] for reconstruction; walk back from argmax.",
+     time:"O(n²)", space:"O(n)",
+     url:"https://leetcode.com/problems/largest-divisible-subset/"},
+    {num:376, name:"Wiggle Subsequence", diff:"Medium", pattern:"Alternating-State DP",
+     why:"Two-state DP (up, down) — a compact state-machine pattern.",
+     approach:"up = down + 1 if nums[i] > nums[i−1]; down = up + 1 if nums[i] < nums[i−1].",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/wiggle-subsequence/"},
+    {num:279, name:"Perfect Squares", diff:"Medium", pattern:"Unbounded-Knapsack Min (variant)",
+     why:"Classic min-coin DP with squares instead of coins — cements the template.",
+     approach:"dp[i] = 1 + min over j² ≤ i of dp[i−j²]; dp[0]=0.",
+     time:"O(n·√n)", space:"O(n)",
+     alt:"Lagrange four-square theorem: O(√n).",
+     url:"https://leetcode.com/problems/perfect-squares/"},
+  ],
+
+  "2-D Dynamic Programming": [
+    {num:174, name:"Dungeon Game", diff:"Hard", pattern:"Bottom-Right DP (Reverse Direction)",
+     why:"Tricky: forward DP fails; must DP from bottom-right because 'minimum HP at start' depends on future.",
+     approach:"dp[i][j] = max(1, min(dp[i+1][j], dp[i][j+1]) − dungeon[i][j]); base case bottom-right + 1.",
+     time:"O(m·n)", space:"O(n)",
+     url:"https://leetcode.com/problems/dungeon-game/"},
+    {num:1312, name:"Minimum Insertion Steps to Make a String Palindrome", diff:"Hard", pattern:"LPS Complement",
+     why:"Answer = n − LPS(s) — elegant reduction, reinforces Longest Palindromic Subseq.",
+     approach:"Compute LPS of s (= LCS of s and reverse(s)); answer = n − LPS.",
+     time:"O(n²)", space:"O(n²)",
+     url:"https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/"},
+    {num:940, name:"Distinct Subsequences II", diff:"Hard", pattern:"DP with Last-Occurrence Subtraction",
+     why:"Counting distinct subseq needs subtracting by last occurrence — unique idiom.",
+     approach:"dp[i] = 2·dp[i−1] − dp[last[s[i]]−1]; update last[s[i]].",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/distinct-subsequences-ii/"},
+  ],
+
+  "Advanced DP — Interval, Bitmask, Digit": [
+    {num:691, name:"Stickers to Spell Word", diff:"Hard", pattern:"Bitmask DP — Subset State",
+     why:"Target letters as bitmask; stickers applied greedily — classic subset-cover DP.",
+     approach:"dp[mask] = min stickers to cover mask; for each sticker, try to update mask | sticker_mask from mask.",
+     time:"O(2^T · N · L)", space:"O(2^T)",
+     url:"https://leetcode.com/problems/stickers-to-spell-word/"},
+    {num:968, name:"Binary Tree Cameras", diff:"Hard", pattern:"Tree DP — 3-State (Covered/Camera/Uncovered)",
+     why:"Canonical 3-state tree DP — state machine returned up the tree.",
+     approach:"DFS returns state: 0=not covered, 1=covered, 2=camera; combine children to decide parent state; count cameras.",
+     time:"O(n)", space:"O(h)",
+     url:"https://leetcode.com/problems/binary-tree-cameras/"},
+    {num:600, name:"Non-negative Integers without Consecutive Ones", diff:"Hard", pattern:"Digit DP over Binary",
+     why:"Digit DP on binary representation with Fibonacci-like state — a classic.",
+     approach:"Fib-based counts for bit lengths; walk MSB-to-LSB, adding counts for '0 here' branches while tight, stopping if two consecutive 1s.",
+     time:"O(log n)", space:"O(log n)",
+     url:"https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/"},
+    {num:1751, name:"Maximum Number of Events That Can Be Attended II", diff:"Hard", pattern:"DP + Binary Search (weighted job scheduling twin)",
+     why:"Direct sibling of #1235 with an extra 'k events' constraint — reinforces BS-in-DP.",
+     approach:"Sort events by end; dp[i][k] = max(dp[i−1][k], value[i] + dp[j][k−1]) where j = BS for last non-conflict.",
+     time:"O(n k log n)", space:"O(n k)",
+     url:"https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended-ii/"},
+  ],
+
+  "Greedy": [
+    {num:621, name:"Task Scheduler (already listed) — cross-ref", diff:"Medium", pattern:"cross-ref",
+     why:"cross-ref",
+     approach:"cross-ref",
+     time:"-", space:"-",
+     url:"-"},
+    {num:330, name:"Patching Array", diff:"Hard", pattern:"Greedy — Reachable Prefix",
+     why:"Beautiful invariant: if reachable sum is miss, adding miss doubles reach. Rare, unique technique.",
+     approach:"miss = 1; while miss ≤ n: if next num ≤ miss, miss += num and advance; else add miss as patch, miss *= 2.",
+     time:"O(m + log n)", space:"O(1)",
+     url:"https://leetcode.com/problems/patching-array/"},
+    {num:870, name:"Advantage Shuffle", diff:"Medium", pattern:"Greedy — Sort + Two Queues",
+     why:"'Horse racing' greedy — assign smallest winning card or sacrifice smallest card. Reusable heuristic.",
+     approach:"Sort A; sort B with indices; two pointers on A: if A[lo] > B[i] use it; else use A[hi] (sacrifice).",
+     time:"O(n log n)", space:"O(n)",
+     url:"https://leetcode.com/problems/advantage-shuffle/"},
+    {num:921, name:"Minimum Add to Make Parentheses Valid", diff:"Medium", pattern:"Counter-Based Bracket Sweep",
+     why:"Simple but essential — count opens; unmatched closes increment answer.",
+     approach:"open=0, close=0; '(' → open++; ')' → if open open−− else close++; answer=open+close.",
+     time:"O(n)", space:"O(1)",
+     url:"https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/"},
+  ],
+
+  "Intervals & Line Sweep": [
+    {num:1288, name:"Remove Covered Intervals", diff:"Medium", pattern:"Sort by Start (tiebreak End Desc)",
+     why:"Specific sort key — start asc, end desc — solves the 'covered' check in one pass.",
+     approach:"Sort by (start asc, end desc); sweep tracking max end; count interval as 'new' if its end > max end before.",
+     time:"O(n log n)", space:"O(1)",
+     url:"https://leetcode.com/problems/remove-covered-intervals/"},
+    {num:2406, name:"Divide Intervals Into Minimum Number of Groups", diff:"Medium", pattern:"Sweep — Max Concurrency",
+     why:"Equivalent to max concurrency — reinforces the events approach.",
+     approach:"Create +1/−1 events at start/end+1; sort; running sum; answer = max sum.",
+     time:"O(n log n)", space:"O(n)",
+     alt:"Min-heap of end times, like meeting-rooms II.",
+     url:"https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/"},
+  ],
+
+  "Bit Manipulation": [
+    {num:187, name:"Repeated DNA Sequences (cross-ref)", diff:"Medium", pattern:"cross-ref",
+     why:"cross-ref",
+     approach:"cross-ref",
+     time:"-", space:"-",
+     url:"-"},
+    {num:89, name:"Gray Code", diff:"Medium", pattern:"Gray Code Generation",
+     why:"Named sequence worth knowing — generated via i ^ (i>>1) for n-bit codes.",
+     approach:"For i in 0..2ⁿ−1: emit i ^ (i>>1).",
+     time:"O(2ⁿ)", space:"O(2ⁿ)",
+     url:"https://leetcode.com/problems/gray-code/"},
+    {num:1310, name:"XOR Queries of a Subarray", diff:"Medium", pattern:"XOR Prefix Array",
+     why:"XOR is invertible like sum — prefix XOR answers range-XOR in O(1).",
+     approach:"prefix[i+1] = prefix[i] XOR arr[i]; query(l,r) = prefix[r+1] XOR prefix[l].",
+     time:"O(n + q)", space:"O(n)",
+     url:"https://leetcode.com/problems/xor-queries-of-a-subarray/"},
+  ],
+
+  "Math, Geometry & Number Theory": [
+    {num:7, name:"Reverse Integer", diff:"Medium", pattern:"Digit Extraction + Overflow Check",
+     why:"Teaches 32-bit overflow handling — a small but classic concern.",
+     approach:"pop last digit via %10, /10; pre-check for overflow before pushing onto result.",
+     time:"O(log n)", space:"O(1)",
+     url:"https://leetcode.com/problems/reverse-integer/"},
+    {num:67, name:"Add Binary", diff:"Easy", pattern:"Two-Pointer Arithmetic with Carry",
+     why:"Foundational — string addition with carry, mirrors many big-number problems.",
+     approach:"Two pointers from ends; carry = (a_digit + b_digit + carry); append carry%2; carry/=2.",
+     time:"O(max(n,m))", space:"O(max(n,m))",
+     url:"https://leetcode.com/problems/add-binary/"},
+    {num:29, name:"Divide Two Integers", diff:"Medium", pattern:"Doubling Subtraction (No Division Op)",
+     why:"Classic 'implement X without the X operator' exercise — shift-double the divisor.",
+     approach:"Accumulate (divisor<<k) while ≤ remaining dividend; subtract; sum 2^k values.",
+     time:"O(log² n)", space:"O(1)",
+     url:"https://leetcode.com/problems/divide-two-integers/"},
+    {num:166, name:"Fraction to Recurring Decimal", diff:"Medium", pattern:"Long Division with Hashed Remainders",
+     why:"Detect recurring cycles via remainder hashing — a beautiful classical algorithm.",
+     approach:"Simulate long division; map remainder→index in output; when remainder repeats, insert '(' at that index and append ')'.",
+     time:"O(denom)", space:"O(denom)",
+     url:"https://leetcode.com/problems/fraction-to-recurring-decimal/"},
+    {num:223, name:"Rectangle Area", diff:"Medium", pattern:"2-Rect Intersection Area",
+     why:"Clean geometry primitive — inclusion-exclusion on rectangles.",
+     approach:"area = A + B − overlap; overlap x = max(0, min(x2s) − max(x1s)); similarly for y.",
+     time:"O(1)", space:"O(1)",
+     url:"https://leetcode.com/problems/rectangle-area/"},
+  ],
+
+  "Segment Tree / Fenwick (BIT) / Sqrt Decomp": [
+    {num:218, name:"Skyline (cross-ref)", diff:"Hard", pattern:"cross-ref",
+     why:"cross-ref",
+     approach:"cross-ref",
+     time:"-", space:"-",
+     url:"-"},
+    {num:308, name:"Range Sum Query 2D — Mutable", diff:"Hard", pattern:"2D Fenwick Tree",
+     why:"Lifts BIT to 2D — update (r,c) and query rectangular sum in O(log²).",
+     approach:"bit[r][c] indexed in both dims; update propagates r += r & −r (then c += c & −c); query is 4-corner prefix sums.",
+     time:"O(log m · log n) per op", space:"O(mn)",
+     url:"https://leetcode.com/problems/range-sum-query-2d-mutable/"},
+    {num:2334, name:"Subarray With Elements Greater Than Varying Threshold", diff:"Hard", pattern:"Union-Find on Sorted Values",
+     why:"Advanced DSU technique: process values high→low, merging neighbors as they 'light up'. A rare-but-powerful pattern.",
+     approach:"Sort indices by value desc; for each, union with lit neighbors; group size s with current value v: if v > threshold/s return s.",
+     time:"O(n log n)", space:"O(n)",
+     url:"https://leetcode.com/problems/subarray-with-elements-greater-than-varying-threshold/"},
+  ],
+
+  "Design": [
+    {num:705, name:"Design HashSet", diff:"Easy", pattern:"Hashing from Scratch",
+     why:"Implement hashing fundamentals — bucket array + chaining.",
+     approach:"Fixed bucket array; each bucket a linked list; hash = key % size.",
+     time:"O(1) avg", space:"O(buckets + keys)",
+     url:"https://leetcode.com/problems/design-hashset/"},
+    {num:1381, name:"Design a Stack With Increment Operation", diff:"Medium", pattern:"Lazy Propagation on Array",
+     why:"Increment K elements in O(1) via delayed addition on a parallel inc[] array — simple lazy-prop.",
+     approach:"array push/pop as normal; inc[i] = pending increment to elements at indices ≤ i; on pop, value += inc[top], push inc down to inc[top−1].",
+     time:"O(1) per op", space:"O(maxSize)",
+     url:"https://leetcode.com/problems/design-a-stack-with-increment-operation/"},
+    {num:225, name:"Implement Stack using Queues", diff:"Easy", pattern:"Single-Queue Rotation",
+     why:"Cute: push by enqueuing and rotating the queue so new element is at front.",
+     approach:"On push, enqueue x; then rotate queue size−1 times so x is at front.",
+     time:"O(n) push, O(1) pop", space:"O(n)",
+     url:"https://leetcode.com/problems/implement-stack-using-queues/"},
+  ],
+
+  "Randomized Algorithms & Sampling": [
+    {num:519, name:"Random Flip Matrix", diff:"Medium", pattern:"Virtual Swap-Last (Compact Map)",
+     why:"Memory-efficient sampling without replacement via swap-last trick.",
+     approach:"Pick r in [0, remaining); if r in map use map[r], else use r; replace with (map[remaining−1] or remaining−1); remaining--.",
+     time:"O(1) per flip", space:"O(flips)",
+     url:"https://leetcode.com/problems/random-flip-matrix/"},
+  ],
+
+  "Backtracking_extras": [
+    {num:805, name:"Split Array With Same Average", diff:"Hard", pattern:"Meet in the Middle",
+     why:"Essential exponential-reduction technique — enumerate halves, combine via hashing. Not available elsewhere in the list.",
+     approach:"Split nums into halves; enumerate all subset sums per half; for each size k, check if complementary half has the needed sum for the target average.",
+     time:"O(2^(n/2) · n)", space:"O(2^(n/2))",
+     url:"https://leetcode.com/problems/split-array-with-same-average/"},
+  ],
+
+  "Graphs — Advanced_extras": [
+    {num:1857, name:"Largest Color Value in a Directed Graph", diff:"Hard", pattern:"Topological Sort + DP on Colors",
+     why:"Combines topo sort with per-color DP — teaches DP that piggybacks on topological ordering.",
+     approach:"Kahn's topo; for each node popped, dp[node][node.color] += 1; propagate max dp to successors; cycle ⇒ −1.",
+     time:"O((V+E)·26)", space:"O(V·26)",
+     url:"https://leetcode.com/problems/largest-color-value-in-a-directed-graph/"},
+  ],
+
+  "Intervals & Line Sweep_extras": [
+    {num:850, name:"Rectangle Area II", diff:"Hard", pattern:"Sweep Line over 2D with Segment Tree",
+     why:"Canonical 2D sweep — events at rectangle x-boundaries, segtree tracks covered y-length.",
+     approach:"Events (x, open/close, y1, y2) sorted by x; segment tree over compressed y tracks covered length; area += covered · Δx.",
+     time:"O(n log n)", space:"O(n)",
+     url:"https://leetcode.com/problems/rectangle-area-ii/"},
+  ],
+
+  "Strings — Pattern Matching_extras": [
+    {num:1316, name:"Distinct Echo Substrings", diff:"Hard", pattern:"Rolling Hash — All-Lengths Enumeration",
+     why:"Iterate each half-length and use rolling hash to detect equal consecutive halves.",
+     approach:"For each half-length L, slide window of 2L; compare hash of first half to hash of second half; collect distinct matches.",
+     time:"O(n²) with hashing", space:"O(n²)",
+     url:"https://leetcode.com/problems/distinct-echo-substrings/"},
+  ],
+
+  "Sliding Window_extras": [
+    {num:1838, name:"Frequency of the Most Frequent Element", diff:"Medium", pattern:"Sliding Window with Sum Budget",
+     why:"'How many elements can I raise to nums[r] within k operations' — budget-driven window.",
+     approach:"Sort; expand right; while (r−l+1)·nums[r] − windowSum > k, shrink left; track max length.",
+     time:"O(n log n)", space:"O(1)",
+     url:"https://leetcode.com/problems/frequency-of-the-most-frequent-element/"},
+  ],
+
+  "Trees_extras": [
+    {num:538, name:"Convert BST to Greater Tree", diff:"Medium", pattern:"Reverse In-Order Accumulation",
+     why:"Reverse in-order (right→node→left) gives decreasing order — accumulate into running sum.",
+     approach:"DFS right; accumulate sum into node.val; DFS left. Stateful traversal.",
+     time:"O(n)", space:"O(h)",
+     url:"https://leetcode.com/problems/convert-bst-to-greater-tree/"},
+    {num:99, name:"Recover Binary Search Tree", diff:"Medium", pattern:"In-Order Two-Violation Detection",
+     why:"Detect two swapped nodes via in-order traversal — a specific-but-famous trick.",
+     approach:"In-order traverse; track prev; record first and second wrong nodes (second = latest wrong); swap their values.",
+     time:"O(n)", space:"O(h)",
+     url:"https://leetcode.com/problems/recover-binary-search-tree/"},
+  ],
+
+  "Linked List_extras": [
+    {num:1171, name:"Remove Zero Sum Consecutive Nodes from Linked List", diff:"Medium", pattern:"Prefix Sum on Linked List",
+     why:"Prefix-sum hash applied to a list — teaches cross-domain transfer of techniques.",
+     approach:"Compute prefix sums into map (sum→latest node); second pass: at each node jump its .next to map[prefix].next, skipping the zero-sum middle.",
+     time:"O(n)", space:"O(n)",
+     url:"https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/"},
+  ],
+};
+const DATA_MNC = {
+  "Arrays & Hashing": [
+    {num:2013, name:"Detect Squares", diff:"Medium", pattern:"Hash Map — Geometric Incremental Counting",
+     why:"A Google/Meta favorite — teaches counting geometric structures by point-pair reasoning.",
+     approach:"Count[(x,y)] of points; for query (qx,qy), for each anchor (x,y) sharing x or y with query, check the other two corners exist.",
+     time:"O(n) per count/query", space:"O(n)",
+     companies:"Google, Meta",
+     followup:"What if points can have decimals? (Key on strings.) What if you want rectangles not squares?",
+     url:"https://leetcode.com/problems/detect-squares/"},
+    {num:937, name:"Reorder Data in Log Files", diff:"Medium", pattern:"Custom Comparator Sort",
+     why:"Amazon onsite staple — exercises writing a multi-key comparator cleanly.",
+     approach:"Split each log; classify as letter/digit; sort letter logs by (content, id); keep digit logs stable at end.",
+     time:"O(n log n)", space:"O(n)",
+     companies:"Amazon",
+     followup:"Stable sort guarantee? Handle mixed content/digit ambiguities.",
+     url:"https://leetcode.com/problems/reorder-data-in-log-files/"},
+    {num:249, name:"Group Shifted Strings", diff:"Medium", pattern:"Canonical Key by Shift",
+     why:"Teaches normalization-as-hash-key — shift all strings to 'start at a'.",
+     approach:"Key each string by its difference sequence (each char − first char) mod 26; group.",
+     time:"O(n·k)", space:"O(n·k)",
+     companies:"Google, Meta, Uber",
+     followup:"What if cyclic shifts are allowed? What about more dimensions?",
+     url:"https://leetcode.com/problems/group-shifted-strings/"},
+    {num:31, name:"Next Permutation", diff:"Medium", pattern:"Two-Pass Swap-and-Reverse",
+     why:"Meta favorite — one of those 'elegant once you see it' algorithms.",
+     approach:"Find first i from right where nums[i]<nums[i+1]; find rightmost j>i with nums[j]>nums[i]; swap; reverse nums[i+1:].",
+     time:"O(n)", space:"O(1)",
+     companies:"Meta, Google",
+     followup:"Previous permutation? kth permutation?",
+     url:"https://leetcode.com/problems/next-permutation/"},
+    {num:696, name:"Count Binary Substrings", diff:"Easy", pattern:"Group Counting on Runs",
+     why:"Simple but clean — count groups of consecutive identical chars, then sum min(g[i], g[i+1]).",
+     approach:"Compress into run-lengths; answer = Σ min(runs[i], runs[i+1]).",
+     time:"O(n)", space:"O(1) (streaming)",
+     companies:"Amazon, Facebook",
+     followup:"Streaming version with two counters — prev and cur.",
+     url:"https://leetcode.com/problems/count-binary-substrings/"},
+    {num:2007, name:"Find Original Array From Doubled Array", diff:"Medium", pattern:"Freq Map + Sort + Pair Consumption",
+     why:"Google favorite — match pairs greedily from smallest absolute value.",
+     approach:"Sort by absolute value; count freqs; for each x, if count[x]>0 and count[2x]>0 pair them; else fail.",
+     time:"O(n log n)", space:"O(n)",
+     companies:"Google",
+     followup:"What if relationship is x → 3x? What if multiple relations are allowed?",
+     url:"https://leetcode.com/problems/find-original-array-from-doubled-array/"},
+    {num:659, name:"Split Array into Consecutive Subsequences", diff:"Medium", pattern:"Greedy with Two Counters",
+     why:"Subtle and instructive — tracks available ends of existing subsequences to extend.",
+     approach:"freq counts each num; need[v] counts how many subseq need v; greedily extend if need[x]>0, else start new (requires x+1, x+2).",
+     time:"O(n)", space:"O(n)",
+     companies:"Google",
+     followup:"Variant where subsequences must have length ≥ 4?",
+     url:"https://leetcode.com/problems/split-array-into-consecutive-subsequences/"},
+  ],
+
+  "Strings — Pattern Matching": [
+    {num:415, name:"Add Strings", diff:"Easy", pattern:"Digit Addition with Carry",
+     why:"Meta/Amazon must-know — simulate addition without converting to int.",
+     approach:"Two pointers from ends; carry; append sum%10; reverse.",
+     time:"O(max(n,m))", space:"O(max(n,m))",
+     companies:"Meta, Amazon, Apple",
+     followup:"Add two decimals? Add in other bases?",
+     url:"https://leetcode.com/problems/add-strings/"},
+    {num:273, name:"Integer to English Words", diff:"Hard", pattern:"Chunked Recursion + Mapping Table",
+     why:"Classic hard — teaches 'chunk the problem into known pieces'. Meta/Amazon/LinkedIn frequent.",
+     approach:"Split num into groups of thousands; convert each 3-digit group using below-20 and tens tables; append scale (Thousand, Million, Billion).",
+     time:"O(log n)", space:"O(log n)",
+     companies:"Meta, Amazon, LinkedIn",
+     followup:"Handle negatives and decimals. Handle other locales.",
+     url:"https://leetcode.com/problems/integer-to-english-words/"},
+    {num:833, name:"Find And Replace in String", diff:"Medium", pattern:"Sort Indices + Sweep Replace",
+     why:"Google favorite — index-alignment problem; process sources in sorted index order.",
+     approach:"Sort indices by position; walk source; when index matches and substring at that index equals source[k], replace and skip; else copy char.",
+     time:"O(n + k log k)", space:"O(n)",
+     companies:"Google",
+     followup:"Overlapping replacements? Pattern-based replacements?",
+     url:"https://leetcode.com/problems/find-and-replace-in-string/"},
+    {num:408, name:"Valid Word Abbreviation", diff:"Easy", pattern:"Two-Pointer with Number Skip",
+     why:"Meta warm-up — parse embedded numbers while two-pointer walking.",
+     approach:"i on word, j on abbr; if abbr[j] is digit, parse full number (no leading 0); i += num; else compare chars.",
+     time:"O(n)", space:"O(1)",
+     companies:"Meta",
+     followup:"Generate all abbreviations (LC 320).",
+     url:"https://leetcode.com/problems/valid-word-abbreviation/"},
+    {num:1087, name:"Brace Expansion", diff:"Medium", pattern:"DFS Combinatorial Expansion",
+     why:"Google onsite favorite — DFS producing the Cartesian product.",
+     approach:"Parse into list of options per position; DFS picking one per list; accumulate; sort final.",
+     time:"O(product of option sizes)", space:"O(result size)",
+     companies:"Google",
+     followup:"Handle nested braces (Brace Expansion II, LC 1096).",
+     url:"https://leetcode.com/problems/brace-expansion/"},
+    {num:468, name:"Validate IP Address", diff:"Medium", pattern:"Case Analysis Parsing",
+     why:"Pure parsing hygiene — forces careful edge-case thinking.",
+     approach:"If contains ':' check IPv6 (8 groups, hex, length); if '.' check IPv4 (4 groups, 0-255, no leading zero).",
+     time:"O(n)", space:"O(1)",
+     companies:"Meta, Apple",
+     followup:"CIDR notation? Private-range detection?",
+     url:"https://leetcode.com/problems/validate-ip-address/"},
+    {num:158, name:"Read N Characters Given Read4 II — Call Multiple Times", diff:"Hard", pattern:"Buffered Reader State",
+     why:"LinkedIn classic — teaches buffering state across calls, a real-systems skill.",
+     approach:"Persist a 4-byte internal buffer + position + size; on each read, first drain buffer, then call read4 as needed.",
+     time:"O(n) per call", space:"O(1)",
+     companies:"LinkedIn, Meta",
+     followup:"Thread-safe version? Asynchronous API?",
+     url:"https://leetcode.com/problems/read-n-characters-given-read4-ii-call-multiple-times/"},
+  ],
+
+  "Trees": [
+    {num:314, name:"Binary Tree Vertical Order Traversal", diff:"Medium", pattern:"BFS with Column Index",
+     why:"Meta loves this — simpler than #987 but same idea without needing sort.",
+     approach:"BFS storing (node, col); group by col; emit left-to-right (BFS order preserves row, no sort needed).",
+     time:"O(n)", space:"O(n)",
+     companies:"Meta, Facebook",
+     followup:"What if you need top-down within same (col, row)? (Use #987 version.)",
+     url:"https://leetcode.com/problems/binary-tree-vertical-order-traversal/"},
+    {num:1110, name:"Delete Nodes And Return Forest", diff:"Medium", pattern:"DFS with Parent-Awareness",
+     why:"Google favorite — DFS that disconnects nodes and collects roots.",
+     approach:"Post-order DFS; if node is to-delete, return null and add children to forest; else return node.",
+     time:"O(n)", space:"O(n)",
+     companies:"Google, Amazon",
+     followup:"Delete nodes below a given depth?",
+     url:"https://leetcode.com/problems/delete-nodes-and-return-forest/"},
+    {num:938, name:"Range Sum of BST", diff:"Easy", pattern:"BST-Pruned DFS",
+     why:"Meta easy — but specifically tests pruning via BST invariants.",
+     approach:"DFS: if node.val < low recurse right only; if > high recurse left only; else include and recurse both.",
+     time:"O(n) worst, O(log n + k) balanced", space:"O(h)",
+     companies:"Meta, Facebook",
+     followup:"What if the tree is not a BST?",
+     url:"https://leetcode.com/problems/range-sum-of-bst/"},
+    {num:270, name:"Closest Binary Search Tree Value", diff:"Easy", pattern:"BST Iterative Closest",
+     why:"Warm-up but crucial — walk down BST refining the best candidate.",
+     approach:"Walk down; update best if |node.val − target| < |best − target|; go left or right by comparison.",
+     time:"O(h)", space:"O(1)",
+     companies:"Google, Microsoft",
+     followup:"Find k closest values (LC 272).",
+     url:"https://leetcode.com/problems/closest-binary-search-tree-value/"},
+    {num:2096, name:"Step-By-Step Directions From a Binary Tree Node to Another", diff:"Medium", pattern:"Find LCA + Path Strings",
+     why:"Google favorite — beautiful synthesis: find paths from LCA to each, then combine.",
+     approach:"Find LCA; build path from LCA to start (as Ls/Rs), then reverse each L/R into U; build path from LCA to dest; concatenate.",
+     time:"O(n)", space:"O(n)",
+     companies:"Google",
+     followup:"K paths at once? Min-cost path if edges weighted?",
+     url:"https://leetcode.com/problems/step-by-step-directions-from-a-binary-tree-node-to-another/"},
+    {num:426, name:"Convert Binary Search Tree to Sorted Doubly Linked List", diff:"Medium", pattern:"In-Order with Previous Pointer",
+     why:"Classic Meta/Microsoft — in-order traversal threading prev/next pointers.",
+     approach:"In-order DFS; maintain prev pointer; link prev.right = node, node.left = prev; finally close the circle head↔tail.",
+     time:"O(n)", space:"O(h)",
+     companies:"Meta, Microsoft, Google",
+     followup:"Convert back? Do it iteratively?",
+     url:"https://leetcode.com/problems/convert-binary-search-tree-to-sorted-doubly-linked-list/"},
+    {num:2265, name:"Count Nodes Equal to Average of Subtree", diff:"Medium", pattern:"DFS Returning (sum, count)",
+     why:"Reinforces 'DFS returns aggregated tuple, check at each node'.",
+     approach:"DFS returns (sum, count); at each node if node.val == sum/count, increment global answer.",
+     time:"O(n)", space:"O(h)",
+     companies:"Amazon",
+     followup:"Count nodes equal to median/mode of subtree.",
+     url:"https://leetcode.com/problems/count-nodes-equal-to-average-of-subtree/"},
+    {num:1644, name:"Lowest Common Ancestor II (with nulls)", diff:"Medium", pattern:"LCA — Existence-Aware",
+     why:"Twist on #236: handle nodes that may not exist in the tree.",
+     approach:"DFS returning (lca, p_found, q_found); only accept as LCA if both found; propagate found-flags up.",
+     time:"O(n)", space:"O(h)",
+     companies:"Meta, Google",
+     followup:"LCA III with parent pointers? LCA IV with multiple nodes?",
+     url:"https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-ii/"},
+    {num:1650, name:"Lowest Common Ancestor III (with parent pointers)", diff:"Medium", pattern:"LCA via Pointer Length Equalization",
+     why:"Same trick as list intersection (#160) applied to trees via parent pointers.",
+     approach:"Two pointers starting at p and q; when one hits null, redirect to the OTHER's start; meet at LCA.",
+     time:"O(h)", space:"O(1)",
+     companies:"Meta, Amazon, Linkedin",
+     followup:"Without parent pointers? Using just node references?",
+     url:"https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree-iii/"},
+  ],
+
+  "Graphs — Core": [
+    {num:489, name:"Robot Room Cleaner", diff:"Hard", pattern:"DFS with Relative Coordinates + Backtrack Motion",
+     why:"Google signature interactive problem — DFS without knowing the grid in advance.",
+     approach:"DFS tracking (x, y, direction); visit set; try 4 directions relative; actually call robot.move/turn; physically backtrack.",
+     time:"O(N)", space:"O(N)",
+     companies:"Google, Facebook",
+     followup:"What if cleaning is costly? Limited battery?",
+     url:"https://leetcode.com/problems/robot-room-cleaner/"},
+    {num:947, name:"Most Stones Removed with Same Row or Column", diff:"Medium", pattern:"Union-Find on Rows+Cols",
+     why:"Beautiful UF reduction — union row_i with col_j; answer = n − #components.",
+     approach:"Treat row r as node 'r', col c as node 'c+10000'; UF each stone's row and col; answer = n − unique roots.",
+     time:"O(n·α)", space:"O(n)",
+     companies:"Google, Meta",
+     followup:"Diagonal connections? 3D?",
+     url:"https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/"},
+    {num:1293, name:"Shortest Path in a Grid with Obstacles Elimination", diff:"Hard", pattern:"BFS with State (cell, k_used)",
+     why:"Google favorite — BFS where state is augmented by resources remaining.",
+     approach:"BFS over (r, c, k_used); visited keyed by that triple; expand 4-directionally, k_used++ on obstacle.",
+     time:"O(m·n·k)", space:"O(m·n·k)",
+     companies:"Google",
+     followup:"Dynamic obstacles? Diagonal moves?",
+     url:"https://leetcode.com/problems/shortest-path-in-a-grid-with-obstacles-elimination/"},
+    {num:126, name:"Word Ladder II", diff:"Hard", pattern:"BFS + DFS Path Reconstruction",
+     why:"Two-phase: BFS to find shortest distance, then DFS backtracking to rebuild all paths.",
+     approach:"BFS building level-graph (parents at each level); DFS from end to start using parents to list all shortest paths.",
+     time:"O(N·L²)", space:"O(N·L²)",
+     companies:"Amazon, Google",
+     followup:"K-th shortest path? Weighted edges?",
+     url:"https://leetcode.com/problems/word-ladder-ii/"},
+  ],
+
+  "Math, Geometry & Number Theory": [
+    {num:1041, name:"Robot Bounded In Circle (cross-ref)", diff:"Medium", pattern:"cross-ref", why:"-", approach:"-", time:"-", space:"-", url:"-"},
+    {num:348, name:"Design Tic-Tac-Toe", diff:"Medium", pattern:"Row/Col/Diagonal Counters",
+     why:"Classic design with O(1) move — use 4 counters per player per line.",
+     approach:"rows[n], cols[n], diag, anti_diag track running scores (+1 for X, −1 for O); on |count|==n, winner.",
+     time:"O(1) per move", space:"O(n)",
+     companies:"Google, Amazon",
+     followup:"N-in-a-row? Multiple players?",
+     url:"https://leetcode.com/problems/design-tic-tac-toe/"},
+  ],
+
+  "Heap / Priority Queue": [
+    {num:2034, name:"Stock Price Fluctuation", diff:"Medium", pattern:"Heap + HashMap + Lazy Deletion",
+     why:"Google favorite — teaches the 'lazy-delete from heap' idiom.",
+     approach:"map[ts]=price; latestTs tracked; min/max heaps of (price, ts); on pop, discard if heap's (price, ts) doesn't match map (stale).",
+     time:"O(log n) per op amortized", space:"O(n)",
+     companies:"Google",
+     followup:"Sliding window version? Multiple stocks?",
+     url:"https://leetcode.com/problems/stock-price-fluctuation/"},
+  ],
+
+  "Design": [
+    {num:1146, name:"Snapshot Array", diff:"Medium", pattern:"Per-Index Version History + Binary Search",
+     why:"Classic versioned-data-structure design — sparse storage of changes.",
+     approach:"array[i] = sorted list of (snapshot_id, value); snap() bumps counter; get(i, snap_id) BS on the list for largest snap_id ≤ query.",
+     time:"O(log V) get, O(1) set/snap", space:"O(total writes)",
+     companies:"Amazon, Google",
+     followup:"Range snapshots? Delete old snapshots?",
+     url:"https://leetcode.com/problems/snapshot-array/"},
+    {num:535, name:"Encode and Decode TinyURL", diff:"Medium", pattern:"Bijection (Counter or Random)",
+     why:"URL shortener — teaches both counter and random-ID approaches with collision handling.",
+     approach:"Map short→long; generate 6-char random base62 id; retry on collision; reverse lookup for decode.",
+     time:"O(1) avg", space:"O(n)",
+     companies:"Amazon, Google, Facebook",
+     followup:"Counter vs random tradeoffs? Reversible hashing? Deletion?",
+     url:"https://leetcode.com/problems/encode-and-decode-tinyurl/"},
+    {num:642, name:"Design Search Autocomplete System", diff:"Hard", pattern:"Trie + Top-K per Node",
+     why:"Full-on autocomplete design — trie nodes annotated with hot sentences.",
+     approach:"Trie; each node stores map of sentences passing through it with counts; on input(c), traverse + emit top 3 by (count desc, lex asc).",
+     time:"O(L + T log T)", space:"O(total chars)",
+     companies:"Microsoft, Amazon, Google",
+     followup:"Huge traffic scaling? Personalized ranking?",
+     url:"https://leetcode.com/problems/design-search-autocomplete-system/"},
+    {num:1166, name:"Design File System", diff:"Medium", pattern:"Trie-Style Path Map",
+     why:"Teaches hierarchical-key design with path validation.",
+     approach:"Map full-path→value; on create(path, v): check parent exists; insert if path absent.",
+     time:"O(L) per op", space:"O(n)",
+     companies:"Google, Amazon",
+     followup:"Symlinks? Permissions? Directory listings?",
+     url:"https://leetcode.com/problems/design-file-system/"},
+    {num:1570, name:"Dot Product of Two Sparse Vectors", diff:"Medium", pattern:"Sparse Representation + Two-Pointer Merge",
+     why:"Real-world ML flavor — store only non-zeros; dot-product by merging.",
+     approach:"Store (index, value) pairs sorted by index; two pointers merge — advance smaller index; accumulate product on equal.",
+     time:"O(nnz)", space:"O(nnz)",
+     companies:"Meta, Amazon",
+     followup:"Hash map vs sorted list tradeoff? Very imbalanced sparsity?",
+     url:"https://leetcode.com/problems/dot-product-of-two-sparse-vectors/"},
+  ],
+
+  "Binary Search": [
+    {num:1235, name:"Max Profit Job Scheduling (cross-ref)", diff:"Hard", pattern:"cross-ref", why:"-", approach:"-", time:"-", space:"-", url:"-"},
+  ],
+
+  "2-D Dynamic Programming": [
+    {num:1277, name:"Count Square Submatrices with All Ones", diff:"Medium", pattern:"In-Place DP — Square Side",
+     why:"Sum variant of #221 — counts all squares not just largest.",
+     approach:"dp[i][j] = 1 + min(dp[i−1][j], dp[i][j−1], dp[i−1][j−1]) if cell=1; answer = Σ dp.",
+     time:"O(mn)", space:"O(1) in-place",
+     companies:"Google, Amazon",
+     followup:"Count rectangles instead? Non-square shapes?",
+     url:"https://leetcode.com/problems/count-square-submatrices-with-all-ones/"},
+  ],
+};
+
+const DATA = (function () {
+  const byTopic = new Map();
+  const order = [];
+  const isStub = (p) =>
+    (p.pattern && p.pattern.includes('cross-ref')) ||
+    (p.name && p.name.toLowerCase().includes('cross-ref')) ||
+    (p.url && p.url === '-');
+
+  function addToTopic(topicName, problem) {
+    if (!byTopic.has(topicName)) return false;
+    const t = byTopic.get(topicName);
+    if (t._nums.has(problem.num)) return false;
+    t.problems.push(problem);
+    t._nums.add(problem.num);
+    return true;
+  }
+
+  DATA_PARTS.forEach(part => {
+    part.forEach(topic => {
+      if (!byTopic.has(topic.topic)) {
+        byTopic.set(topic.topic, {topic: topic.topic, blurb: topic.blurb, problems: [], _nums: new Set()});
+        order.push(topic.topic);
+      }
+      const t = byTopic.get(topic.topic);
+      topic.problems.forEach(p => {
+        if (isStub(p)) return;
+        if (!t._nums.has(p.num)) {
+          t.problems.push(p);
+          t._nums.add(p.num);
+        }
+      });
+    });
   });
-});
 
-// Merge supplement: add problems to their topics (skip those marked cross-ref, i.e., same num already in topic)
-Object.entries(DATA_SUPPLEMENT).forEach(([topicName, problems]) => {
-  if (!_byTopic.has(topicName)) return;
-  const t = _byTopic.get(topicName);
-  const existing = new Set(t.problems.map(p => p.num));
-  problems.forEach(p => {
-    if (p.name && p.name.includes('cross-ref')) return;
-    if (!existing.has(p.num)) {
-      t.problems.push(p);
-      existing.add(p.num);
-    }
+  Object.entries(DATA_SUPPLEMENT).forEach(([topicName, probs]) => {
+    probs.forEach(p => { if (!isStub(p)) addToTopic(topicName, p); });
   });
-});
 
-const DATA = _order.map(name => _byTopic.get(name));
+  Object.entries(DATA_GAPS).forEach(([key, probs]) => {
+    const topicName = key.replace(/_extras$/, '');
+    probs.forEach(p => { if (!isStub(p)) addToTopic(topicName, p); });
+  });
+
+  Object.entries(DATA_MNC).forEach(([topicName, probs]) => {
+    probs.forEach(p => { if (!isStub(p)) addToTopic(topicName, p); });
+  });
+
+  return order.map(name => {
+    const t = byTopic.get(name);
+    return {topic: t.topic, blurb: t.blurb, problems: t.problems};
+  });
+})();
 
 
 // ===== State =====
@@ -2617,8 +3514,12 @@ function renderProblem(p) {
   const checked = progress[p.num] ? 'checked' : '';
   const doneClass = progress[p.num] ? 'done' : '';
   const altBlock = p.alt ? `<div class="problem-alt"><b>Alt</b>${p.alt}</div>` : '';
+  const followupBlock = p.followup ? `<div class="problem-followup"><b>Follow-up</b>${p.followup}</div>` : '';
+  const companiesBlock = p.companies
+    ? `<div class="problem-companies">${p.companies.split(',').map(c => `<span class="company-tag">${c.trim()}</span>`).join('')}</div>`
+    : '';
   const searchable = [
-    p.name, p.pattern, p.approach, p.why, p.alt || '', String(p.num), p.diff
+    p.name, p.pattern, p.approach, p.why, p.alt || '', p.companies || '', p.followup || '', String(p.num), p.diff
   ].join(' ').toLowerCase();
   return `
     <div class="problem ${doneClass}" data-num="${p.num}" data-diff="${p.diff}" data-done="${progress[p.num] ? '1' : '0'}" data-search="${escapeAttr(searchable)}">
@@ -2632,10 +3533,12 @@ function renderProblem(p) {
         <div class="problem-why">${p.why}</div>
         <div class="problem-approach"><b>Approach</b>${p.approach}</div>
         ${altBlock}
+        ${followupBlock}
         <div class="problem-meta">
           <span class="complexity">Time · ${p.time}</span>
           <span class="complexity">Space · ${p.space}</span>
         </div>
+        ${companiesBlock}
       </div>
       <div class="difficulty ${p.diff}">${p.diff}</div>
     </div>
