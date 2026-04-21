@@ -3434,16 +3434,30 @@ const DATA = (function () {
 
 // ===== State =====
 const STORAGE_KEY = 'leetcode_pattern_atlas_v2';
-let progress = loadProgress();
+let progress = {};
 
-function loadProgress() {
+async function loadProgress() {
+  // Try Claude's persistent storage first (works in artifact sandbox)
+  if (typeof window !== 'undefined' && window.storage) {
+    try {
+      const result = await window.storage.get(STORAGE_KEY);
+      if (result && result.value) return JSON.parse(result.value);
+    } catch { /* key doesn't exist yet */ }
+    return {};
+  }
+  // Fallback to localStorage (works when file is opened locally)
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
   } catch { return {}; }
 }
 
-function saveProgress() {
+async function saveProgress() {
+  if (typeof window !== 'undefined' && window.storage) {
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify(progress)); }
+    catch (e) { console.warn('Could not save progress', e); }
+    return;
+  }
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
   catch (e) { console.warn('Could not save progress', e); }
 }
@@ -3684,7 +3698,8 @@ function wire() {
 }
 
 // ===== Init =====
-function init() {
+async function init() {
+  progress = await loadProgress();
   renderTOC();
   renderTopics();
   updateMeta();
